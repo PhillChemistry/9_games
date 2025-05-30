@@ -12,7 +12,7 @@ dependencies = [
 ]
 
 [tool.poetry]
-packages = [{include = "9_games", from = "src"}]
+packages = [{include = "games", from = "src"}]
 
 
 [build-system]
