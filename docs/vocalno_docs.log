@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.25 (MiKTeX 24.1) (preloaded format=pdflatex 2025.5.24)  30 MAY 2025 12:03
+This is pdfTeX, Version 3.141592653-2.6-1.40.25 (MiKTeX 24.1) (preloaded format=pdflatex 2025.5.24)  30 MAY 2025 12:06
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -161,32 +161,43 @@ File: visuals.png Graphic file (type png)
 <use visuals.png>
 Package pdftex.def Info: visuals.png  used on input line 17.
 (pdftex.def)             Requested size: 289.07487pt x 289.07487pt.
+<uml_chart.png, id=3, 713.66624pt x 964.60374pt>
+File: uml_chart.png Graphic file (type png)
+<use uml_chart.png>
+Package pdftex.def Info: uml_chart.png  used on input line 29.
+(pdftex.def)             Requested size: 428.20305pt x 578.76672pt.
+
+Overfull \hbox (38.20305pt too wide) in paragraph at lines 29--30
+ [][] 
+ []
 
 
-! LaTeX Error: Unknown graphics extension: .drawio.
+LaTeX Warning: Float too large for page by 80.93335pt on input line 30.
 
-See the LaTeX manual or LaTeX Companion for explanation.
-Type  H <return>  for immediate help.
- ...                                              
-                                                  
-l.29 ...cludegraphics{Unbenanntes Diagramm.drawio}
-                                                  
-? 
-! Emergency stop.
- ...                                              
-                                                  
-l.29 ...cludegraphics{Unbenanntes Diagramm.drawio}
-                                                  
-Try typing  <return>  to proceed.
-If that doesn't work, type  X <return>  to quit.
+[1
 
- 
+{C:/Users/Phill Chemie/AppData/Local/MiKTeX/fonts/map/pdftex/pdftex.map}]
+[2 <./visuals.png>] [3 <./uml_chart.png>] (vocalno_docs.aux)
+ ***********
+LaTeX2e <2023-11-01> patch level 1
+L3 programming layer <2024-01-04>
+ ***********
+ ) 
 Here is how much of TeX's memory you used:
- 2446 strings out of 474486
- 43254 string characters out of 5740415
- 1925542 words of memory out of 5000000
- 24758 multiletter control sequences out of 15000+600000
+ 2427 strings out of 474486
+ 42264 string characters out of 5740415
+ 1926542 words of memory out of 5000000
+ 24737 multiletter control sequences out of 15000+600000
  560185 words of font info for 43 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
- 57i,8n,65p,212b,235s stack positions out of 10000i,1000n,20000p,200000b,200000s
-!  ==> Fatal error occurred, no output PDF file produced!
+ 57i,8n,65p,299b,235s stack positions out of 10000i,1000n,20000p,200000b,200000s
+<C:/Users/Phill Chemie/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfo
+nts/cm/cmbx12.pfb><C:/Users/Phill Chemie/AppData/Local/Programs/MiKTeX/fonts/ty
+pe1/public/amsfonts/cm/cmr12.pfb><C:/Users/Phill Chemie/AppData/Local/Programs/
+MiKTeX/fonts/type1/public/amsfonts/cm/cmr17.pfb>
+Output written on vocalno_docs.pdf (3 pages, 109037 bytes).
+PDF statistics:
+ 32 PDF objects out of 1000 (max. 8388607)
+ 0 named destinations out of 1000 (max. 500000)
+ 11 words of extra memory for PDF output out of 10000 (max. 10000000)
+
