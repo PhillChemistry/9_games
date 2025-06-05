@@ -2,9 +2,9 @@
 from abc import ABC
 from abc import abstractmethod
 import pygame
-from games.pyclock import PyClock
-from games.settings import Settings
-from games.coord_converter import CoordConverter
+from games.volcano_sim.pyclock import PyClock
+from games.volcano_sim.settings import Settings
+from games.volcano_sim.coord_converter import CoordConverter
 
 class Eruptor(ABC):
     ''' abstract base class for a particle manager'''

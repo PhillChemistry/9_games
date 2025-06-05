@@ -1,5 +1,5 @@
 ''' coordinate conversion class'''
-from games.settings import Settings
+from games.volcano_sim.settings import Settings
 
 class CoordConverter:
     ''' class to save'''

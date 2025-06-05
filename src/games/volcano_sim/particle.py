@@ -2,8 +2,8 @@
 import random
 import math
 import pygame
-from games.settings import Settings
-from games.coord_converter import CoordConverter
+from games.volcano_sim.settings import Settings
+from games.volcano_sim.coord_converter import CoordConverter
 
 
 class Particle(CoordConverter):
