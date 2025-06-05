@@ -1,10 +1,10 @@
 ''' includes Volcano and Expulsable classes'''
 from abc import ABC
 from abc import abstractmethod
-from games.settings import Settings
-from games.coord_converter import CoordConverter
-from games.planet import Eruptor
-from games.particle import Particle
+from games.volcano_sim.settings import Settings
+from games.volcano_sim.coord_converter import CoordConverter
+from games.volcano_sim.planet import Eruptor
+from games.volcano_sim.particle import Particle
 
 class Expulsable(ABC):
     ''' abstract base class to determine particles'''

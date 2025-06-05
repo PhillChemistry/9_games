@@ -1,7 +1,7 @@
 ''' defines the clock related class'''
 import pygame
-from games.coord_converter import CoordConverter
-from games.settings import Settings
+from games.volcano_sim.coord_converter import CoordConverter
+from games.volcano_sim.settings import Settings
 
 
 class PyClock(CoordConverter):
