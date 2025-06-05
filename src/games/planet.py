@@ -78,6 +78,10 @@ class Map(ABC):
     def blit_planet(self) -> None:
         ''' concrete class must prove a blit_planet method'''
 
+    @abstractmethod
+    def refresh_background(self) -> None:
+        ''' refreshes the background image'''
+
 
 class Planet(CoordConverter, Map):
     ''' a class to create eruptions'''
@@ -88,23 +92,31 @@ class Planet(CoordConverter, Map):
         self._eruptor = eruptor
         self._planet_dimensions = settings.planet_size #  tuple[0 to 1, 0 to 1]
         self._planet_rect = self._get_planet_rect()
-        self._planet_image = pygame.Surface(self._planet_rect)
+        self._planet_image = pygame.Surface(
+            (self._planet_rect.width, self._planet_rect.height)
+        )
         self._planet_image.fill(settings.planet_color)
-        self._background = pygame.Surface(settings.window_size)
-        self._background.fill('purple')
+        self._default_background = pygame.Surface(settings.window_size)
+        self._default_background.fill('purple')
+        self._background = self._default_background.copy()
         self.clock = clock
 
 
     def blit_clock(self):
         ''' displays the clock on the backgorund'''
         self.clock.update_image()
-        self.background.blit(self.clock.image)
+        self.background.blit(
+            self.clock.image, dest=(
+                self.convert_x_to_px(self.clock.dimensions[0]), 0
+            )
+        )
 
 
     @property
     def eruptor(self):
         ''' returns the object managing the flying particles'''
         return self._eruptor
+
 
     @property
     def planet_dimensions(self):
@@ -113,27 +125,49 @@ class Planet(CoordConverter, Map):
         '''
         return self._planet_dimensions
 
+
     @property
     def background(self):
         ''' returns the background surface of the planet'''
         return self._background
 
 
+    @background.setter
+    def background(self, new_background):
+        ''' sets a new background image'''
+        if not isinstance(new_background, pygame.Surface):
+            raise ValueError
+        self._background = new_background
+
+
+
     def blit_planet(self):
         ''' blits the planet onto the background'''
         self.background.blit(self._planet_image, self._planet_rect)
+
+
 
     def blit_volcano(self):
         ''' blits the particles at their current positions'''
         for particle in self.eruptor.particles:
             self.background.blit(particle.image, particle.box)
 
+
     def _get_planet_rect(self) -> pygame.Rect:
         ''' calculate the planet dimensions'''
-        planet_top = self.planet_dimensions[1]
-        planet_left = .5 - self.planet_dimensions[0] / 2
-        planet_width, planet_height = self.planet_dimensions
+        (planet_left, planet_top) = self.convert_internals_to_px(
+            (.5 - self.planet_dimensions[0] / 2, self.planet_dimensions[1])
+        )
+        planet_width, planet_height = self.convert_dimensions_to_px(
+            self.planet_dimensions
+        )
         planet_rect = pygame.Rect(
-            (planet_left, planet_top, planet_width, planet_height)
+            (planet_left, planet_top), (planet_width, planet_height)
         )
         return planet_rect
+
+
+    def refresh_background(self):
+        ''' refreshes the background image'''
+        self.background = pygame.Surface(size=self.window_size)
+        self.background.fill('purple')

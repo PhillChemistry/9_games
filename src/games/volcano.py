@@ -4,8 +4,9 @@ from abc import abstractmethod
 from games.settings import Settings
 from games.coord_converter import CoordConverter
 from games.planet import Eruptor
+from games.particle import Particle
 
-class Expulsable(ABC, CoordConverter):
+class Expulsable(ABC):
     ''' abstract base class to determine particles'''
 
     @abstractmethod
@@ -23,24 +24,24 @@ class Expulsable(ABC, CoordConverter):
         ''' alternative constructor for the class'''
 
     @abstractmethod
-    def update_positions(self):
+    def update_position(self):
         ''' requires a way to update all particle positions'''
 
     @abstractmethod
-    def update_velocities(self):
+    def update_velocity(self):
         ''' requires a way to update particle positions'''
 
 
 class Volcano(CoordConverter, Eruptor):
     ''' class to manage the volcano emissions created in the simulation'''
     def __init__(
-            self, settings: Settings, default_particle: Expulsable,
+            self, settings: Settings, default_particle: Particle,
     ):
         ''' generate the volcano class to manage the particles'''
         super().__init__(settings)
         self._particles = []
         self._gravity = settings.gravity
-        self._eruption_timer = -1
+        self._eruption_timer = 0
         self._concurrent_expulsions = settings.concurrent_expulsions
         self._eruption_properties = {
             'frequency': settings.eruption_frequency,
@@ -58,7 +59,7 @@ class Volcano(CoordConverter, Eruptor):
                 'avg_velocity': settings.default_velocity,
             }
         else:
-            self._random_attributes['randomness'] = False
+            self._random_attributes = {'randomness': False}
 
     @property
     def particles(self):
@@ -72,9 +73,11 @@ class Volcano(CoordConverter, Eruptor):
             print('particles must be list of Particle objects!')
             raise ValueError
 
+
     @property
     def gravity(self):
         return self._gravity
+
 
     @property
     def concurrent_expulsions(self):
@@ -83,6 +86,7 @@ class Volcano(CoordConverter, Eruptor):
         '''
         return self._concurrent_expulsions
 
+
     @concurrent_expulsions.setter
     def concurrent_expulsions(self, new_num: int):
         if isinstance(new_num, int) and new_num > 0:
@@ -90,6 +94,7 @@ class Volcano(CoordConverter, Eruptor):
         else:
             print('ERROR: new_num must be positive integer!')
             raise ValueError
+
 
     def erupt(self):
         ''' manages particle creation, respecting the eruption frequency
@@ -150,7 +155,7 @@ class Volcano(CoordConverter, Eruptor):
         for _ in range(self.concurrent_expulsions):
             if self._random_attributes['randomness']:
                 self.particles.append(
-                    Expulsable.like_particle(
+                    Particle.like_particle(
                         self._default_particle,
                         self._random_attributes['avg_velocity'],
                         self._random_attributes['velocity_spread'],
@@ -159,7 +164,7 @@ class Volcano(CoordConverter, Eruptor):
                 )
             else:
                 self.particles.append(
-                    Expulsable.like_particle(self._default_particle)
+                    Particle.like_particle(self._default_particle)
                 )
 
 
@@ -169,15 +174,20 @@ class Volcano(CoordConverter, Eruptor):
         return (current_time // frequency
                     != last_erupt_time)
 
+
     def update_particle_velocities(self):
         ''' updates the velocities of all current particles'''
-        for particle in self.particles:
-            particle.update_velocity()
+        if self.particles:
+            for particle in self.particles:
+                particle.update_velocity(self.gravity)
+
 
     def update_particle_positions(self):
         ''' updates the positions and rects/ boxes of the particles'''
-        for particle in self.particles:
-            particle.update_position(self)
+        if self.particles:
+            for particle in self.particles:
+                particle.update_position()
+
 
     def update_particle_movements(self):
         ''' calculate the speeds at which the particles move'''
@@ -187,11 +197,13 @@ class Volcano(CoordConverter, Eruptor):
                 self.gravity
             )
 
+
     def destroy_out_of_bounds(self, ):
         '''determine whether particles are out of bounds, then destroy them'''
         for particle in self.particles:
-            is_below_screen = particle.position[1] < 0
-            too_far_left = particle.position[0] < 0
-            too_far_right = particle.position[0] > 1
+            x_position, y_position = particle.position
+            is_below_screen = y_position < 0
+            too_far_left = x_position < 0
+            too_far_right = x_position > 1
             if is_below_screen or too_far_left or too_far_right:
                 self.particles.remove(particle)

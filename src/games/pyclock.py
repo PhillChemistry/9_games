@@ -12,7 +12,7 @@ class PyClock(CoordConverter):
         self.font = pygame.font.SysFont('Comic Sans MS', 20)
         self._dimensions = settings.clock_dimensions
         self._image = self.font.render(
-            self.clock.get_time(), antialias=False, color=(0, 0, 0)
+            str(self.clock.get_time()), False, (0, 0, 0)
         )
         self._box = self._get_box()
 

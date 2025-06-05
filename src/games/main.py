@@ -12,6 +12,9 @@ from games.volcano import Volcano
 #                         HIGHEST-LEVEL CLASS
 # ==========================================================================
 
+#TODO: for some reason, the length of the particles increases/decreases with speed!
+#TODO: for some reason, negative gravities are not tolerated
+
 class Game(CoordConverter):
     ''' a class to define the game window'''
     def __init__(self, game_map: Map, settings: Settings, clock: PyClock):
@@ -25,21 +28,21 @@ class Game(CoordConverter):
 
     def main_loop(self,):
         ''' define the main loop fo the program'''  
-        self.clock.clock.tick(60)  # set FPS to 60
+        self.clock.clock.tick(1)  # TODO: set FPS to 60
         running = True
         while running:
             if self.check_player_quits():
                 running = False
+            self.game_map.blit_volcano()
+            self.screen.blit(self.game_map.background, (0,0))
+            self.game_map.blit_planet()
+            self.blit_screen()
+            pygame.display.flip()
+
             self.game_map.eruptor.destroy_out_of_bounds()
             self.game_map.eruptor.erupt()
-            self.game_map.eruptor.update_velocities()
-            self.game_map.eruptor.update_positions()
-
-            self.blit_screen()
-            self.game_map.background.blit()
-            self.game_map.blit_planet()
-            self.game_map.blit_volcano()
-            pygame.display.flip()
+            self.game_map.eruptor.update_particle_velocities()
+            self.game_map.eruptor.update_particle_positions()
         pygame.quit()
 
 
@@ -56,7 +59,8 @@ class Game(CoordConverter):
 
     def blit_screen(self):
         ''' pblits the default background'''
-        self.screen.blit(self.game_map.background)
+        self.screen.blit(self.game_map.background, dest=(0,0))
+        self.game_map.refresh_background()
 
 # ======================================================================
 #                           DRIVER CODE:
