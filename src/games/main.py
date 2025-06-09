@@ -1,5 +1,9 @@
 ''' main code to generate the rocket landing game. 
     For further info, see the docs.
+    ideas for extensions after the base game is complete:
+    - add space debree to collide with
+    - add a second planet to land at 
+        (so the player has to escape the first planets gravitational pull)
 '''
 
 from abc import ABC, abstractmethod
@@ -10,34 +14,234 @@ from games.settings import SETTINGS
 #                          TOP LEVEL CLASSES
 # ========================================================================
 
-class Player(ABC):
-    ''' abstract class setting the requirements for a player function'''
-    @abstractmethod
-    def __init__(self):
-        ''' player object constructor (always only 1 player)'''
 
+class CoordinateConverter:
+    ''' class to convert between different coordinate systems:
+        COORDINATES ARE ON A SCALE OF 0 TO 100!
+    ATTRIBUTES:
+        window_size
+    METHODS:
+        convert x
+        convert y 
+        convert width
+        convert length
+        convert xy
+        convwert width length
+    '''
+    def __init__(self, settings: dict):
+        ''' Coordinate Converter constructor'''
+        self.window_size = settings['window_size']
+        self.round_to = settings['rounding_digits']
+
+    def convert_x_position(self, internal_x_value: float):
+        ''' converts internal x value (scale 0 to 100) to window_size pixels'''
+        fraction = round(internal_x_value / 100, self.round_to)
+        return self.window_size[0] * fraction
+
+    def convert_y_position(self, internal_y_value: float):
+        ''' converts internal y value (scale 0 to 100) to window_size pixels'''
+        fraction = round(internal_y_value / 100, self.round_to)
+        fraction = 1 - fraction
+        return self.window_size[1] * fraction
+
+    def convert_xy_position(self, internal_xy_tuple: tuple[float, float]):
+        ''' convert internal positional tuple (0 to 100) to pixels'''
+        x, y = internal_xy_tuple
+        x = self.convert_x_position(x)
+        y = self.convert_y_position(y)
+        return (x, y)
+
+    def convert_width(self, internal_width: float):
+        ''' converts internal width (scale 0 to 100) to window_size pixels'''
+        fraction = round(internal_width / 100, self.round_to)
+        return fraction * self.window_size[0]
+
+    def convert_length(self, internal_length: float):
+        ''' converts internal length (scale 0 to 100) to window_size pixels'''
+        fraction = round(internal_length / 100, self.round_to)
+        return fraction * self.window_size[1]
+
+    def convert_width_length(self, internal_tuple: tuple[float, float]):
+        ''' convert internal width length tuple (0 to 100) to pixels'''
+        x, y = internal_tuple
+        x = self.convert_width(x)
+        y = self.convert_length(y)
+        return (x, y)
+
+
+class GameObject(CoordinateConverter, ABC):
+    ''' base class for game objects
+    ATTRIBUTES:
+        position
+        rect
+        image
+    METHODS:
+        getters / setters
+    '''
     @abstractmethod
+    def __init__(self, settings: dict):
+        ''' generalizzed game object contructor'''
+        super().__init__(settings)
+
     def __post_init__(self):
-        ''' ensure that a post_init method is defined
-            (to check that all attributes are present)
-        '''
+        ''' post init function to check implementation 
+            of  all required attributes'''
 
     @abstractmethod
-    def handle_events(self):
-        ''' define the event handler'''
+    @property
+    def position(self) -> tuple[float, float]:
+        ''' getter for internal position coordinate'''
 
     @abstractmethod
-    def get_inputs(self):
-        ''' define the input handler'''
+    @property
+    def hbox(self) -> pygame.Rect:
+        ''' getter for the hitbox as a rect'''
+
+    @abstractmethod
+    @property
+    def image(self) -> pygame.Surface:
+        ''' getter for the display image'''
+
+
+class Player(ABC):
+    ''' class to manage how the player interacts with the world. 
+    ATTRIBUTE:
+        rocket: Rocket -> the rocket controlled by the player
+        inputs: InputController -> manages the inputs and input flags
+        fuel: FuelManager -> the remaining fuel in the rocket
+        turn_speed
+        thrust_speed
+    METHODS:
+        getters/ settersce 
+        turn rocket
+        thrust rocket
+    '''
+
+
+class HUD:
+    ''' class to handle the HUD elements.
+    ATTRIBUTES:
+        fuel_bar: FuelBar -> blits the remaining player fuel
+        time_display -> shows the current time
+        hud_background
+    METHODS:
+        getters / setters
+    '''
+
+class FuelManager:
+    ''' class to handle the fuel requirements of the space ship.
+        tracks the current fuel as well as the current fuel expenses
+        based on whether there is rocket thrust or not
+    ATTRIBUTES:
+        max fuel
+        current fuel
+        fuel loss by turning
+        fuel loss by thrust
+    METHODS:
+        expend_fuel_turning
+        expend_fuel_thrusting
+        getters / setters
+    '''
+
+
+class Rocket:
+    ''' class to manage the player-controlled rocket ship. ATTRIBUTES:
+    ATTRIBUTES:
+        hbox: pygame.Rect -> controls the position
+        position: tuple[float, float] -> relative position of hbox center
+        angle: float -> 0 to 2 pi, determines the rocket pointer
+        NOTE: you could give the images their own class
+        current_image: pygame.Surface -> contains the current Rocket image
+        default_image: pygame.Surface -> contains the default image to use
+        velocity: tuple[float, float]
+        mass
+    METHODS:
+        getters/ setters
+        update_image
+    '''
+
+
+class Planet:
+    ''' class to handle the planet. 
+    ATTRIBUTES:
+        hbox: pygame.Rect
+        position: tuple[float, float]
+        image
+        mass: float [in tonnes]
+    METHODS:
+        getters / setters
+    '''
+
+
+class NonPlayerObjects:
+    ''' class to manage non-player characters / objects
+    ATTRIBUTES:
+        background -> background
+        planet -> Planet
+    METHODS:
+        getters / setters
+    '''
+
+
+class Background:
+    ''' class to manage the background:
+    ATTRIBUTES:
+        position
+        image
+        hbox
+    METHODS:
+        getters / setters
+    '''
+
+
+class CollisionHandler:
+    ''' class to handle the to check whether two objects collide
+    ATTRIBUTES:
+        max entrance velocity
+        max tolerated angle
+    METHODS:
+        determine collision
+        determine collision with landing site
+        check if landing speed is permissible
+        check if landing angle is permissible
+        check if landing conditions are permissible
+    '''
+
+
+class ForceHandler:
+    ''' class to handle the forces acting on the different objects. 
+    ATRIBUTES:
+        gravitational constant
+    METHODS:
+        determine gravities
+        determine thrust
+        calculate total velocity
+    '''
 
 
 class Game:
-    ''' class to manage the game assetts'''
-    def __init__(self):
+    ''' class to manage the game assetts. Attributes:
+    ATTRIBUTES:
+        screen
+        collision_handler: CollisionHandler -> handles the collisions
+        force_handler: ForceHandler -> determines the current forces objects
+            acting on an object
+        player
+        non_player_objects
+        hud
+    METHODS:
+        main_loop
+        end-screen
+        display_current_image
+        blit(image1, onto_image2) -> blit image1 onto image2
+    '''
+
+
+    def __init__(self, player: Player):
         ''' construct the necessary objects and execute the main loop'''
         pygame.init()
         self.screen = pygame.display.set_mode(SETTINGS['window_size'])
-        self.player = Player
+        self.player = player
 
 
     def display_current_image(self, current_image):
@@ -45,13 +249,15 @@ class Game:
         self.screen.blit(current_image, dest=(0,0))
         pygame.display.flip()
 
+
 # ====================================================================
 #                        DRIVER CODE
 # ====================================================================
 
 def main():
     ''' driver code '''
-    pass
+    game = Game()
+
 
 if __name__ == '__main__':
     main()
