@@ -87,21 +87,94 @@ class GameObject(CoordinateConverter, ABC):
         ''' post init function to check implementation 
             of  all required attributes'''
 
-    @abstractmethod
     @property
+    @abstractmethod
     def position(self) -> tuple[float, float]:
         ''' getter for internal position coordinate'''
 
-    @abstractmethod
     @property
+    @abstractmethod
     def hbox(self) -> pygame.Rect:
         ''' getter for the hitbox as a rect'''
 
-    @abstractmethod
     @property
+    @abstractmethod
     def image(self) -> pygame.Surface:
         ''' getter for the display image'''
 
+
+class InputController:
+    ''' class to handle the player inputs and its flags
+    ATTRIBUTES:
+        turns_left: bool
+        turns_right: bool
+        thrusts
+        quits
+        restarts
+    METHODS:
+        handle_inputs
+        handle_events
+    '''
+
+    def __init__(self):
+        ''' InputController objects handle the player inputs'''
+        self.turns_left = False
+        self.turns_right = False
+        self.thrusts = False
+        self.quits = False
+        self.restarts = False
+
+
+    def handle_inputs(self):
+        ''' receive the current player inputs'''
+        current_events = pygame.event.get()
+        key_functions = {
+            pygame.K_LEFT: self.turns_left,
+            pygame.K_RIGHT: self.turns_right,
+            pygame.K_UP: self.thrusts,
+            pygame.K_ESCAPE: self.quits,
+            pygame.K_r: self.restarts
+        }
+        for event in current_events:
+            if event.type == pygame.KEYDOWN:
+                for key_pressed, corresp_attribute in key_functions.items():
+                    if event.key == key_pressed:
+                        corresp_attribute = True
+            elif event.type == pygame.KEYUP:
+                for key_pressed, corresp_attribute in key_functions.items():
+                    if event.key == key_pressed:
+                        corresp_attribute = False
+        if self.turns_left and self.turns_right:
+            self.turns_left = False
+            self.turns_right = False
+
+
+    def handle_events(self):
+        ''' handles quitting and restart events'''
+        if self.quits:
+            pygame.quit()
+
+
+class Rocket(CoordinateConverter, GameObject):
+    ''' class to manage the player-controlled rocket ship. ATTRIBUTES:
+    ATTRIBUTES:
+        hbox: pygame.Rect -> controls the position
+        position: tuple[float, float] -> relative position of hbox center
+        angle: float -> 0 to 2 pi, determines the rocket pointer
+        NOTE: you could give the images their own class
+        current_image: pygame.Surface -> contains the current Rocket image
+        default_image: pygame.Surface -> contains the default image to use
+        velocity: tuple[float, float]
+        mass
+    METHODS:
+        getters/ setters
+        update_image
+    '''
+    def __init__(self, settings: dict):
+        super().__init__(settings)
+        self._position = settings['starting_position']
+        # TODO: continue here
+    
 
 class Player(ABC):
     ''' class to manage how the player interacts with the world. 
@@ -115,7 +188,44 @@ class Player(ABC):
         getters/ settersce 
         turn rocket
         thrust rocket
+        adjust_fuel
     '''
+    def __init__(
+        self, rocket: Rocket, inputs: InputController,
+        fuel: FuelManager, settings: dict
+    ):
+        ''' the player class manages inputs and the player ship'''
+        self._rocket = rocket
+        self._inputs = inputs
+        self._fuel = fuel
+        self._turn_speed = settings['turn_speed']
+        self._thrust_speed = settings['thrust_speed']
+
+
+    @property
+    def rocket(self) -> Rocket:
+        ''' return object to manage the player ship location and velocity'''
+        return self._rocket
+
+    @property
+    def inputs(self) -> InputController:
+        ''' return the object to handle player inputs'''
+        return self._inputs
+
+    @property
+    def fuel(self) -> FuelManager:
+        ''' return the object to manage remaining thrust fuel'''
+        return self._fuel
+
+    @property
+    def turn_speed(self) -> float:
+        ''' return the specified turn speed of the rocket (in rad/sec)'''
+        return self._turn_speed
+
+    @property
+    def thrust_speed(self) -> float:
+        ''' return the rocket's thrust speed in internal coords (0 to 100)'''
+        return self._thrust_speed
 
 
 class HUD:
@@ -143,22 +253,6 @@ class FuelManager:
         getters / setters
     '''
 
-
-class Rocket:
-    ''' class to manage the player-controlled rocket ship. ATTRIBUTES:
-    ATTRIBUTES:
-        hbox: pygame.Rect -> controls the position
-        position: tuple[float, float] -> relative position of hbox center
-        angle: float -> 0 to 2 pi, determines the rocket pointer
-        NOTE: you could give the images their own class
-        current_image: pygame.Surface -> contains the current Rocket image
-        default_image: pygame.Surface -> contains the default image to use
-        velocity: tuple[float, float]
-        mass
-    METHODS:
-        getters/ setters
-        update_image
-    '''
 
 
 class Planet:
