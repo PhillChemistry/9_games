@@ -118,11 +118,11 @@ class InputController:
 
     def __init__(self):
         ''' InputController objects handle the player inputs'''
-        self.turns_left = False
-        self.turns_right = False
-        self.thrusts = False
-        self.quits = False
-        self.restarts = False
+        self._turns_left = False
+        self._turns_right = False
+        self._thrusts = False
+        self._quits = False
+        self._restarts = False
 
 
     def handle_inputs(self):
@@ -147,6 +147,56 @@ class InputController:
         if self.turns_left and self.turns_right:
             self.turns_left = False
             self.turns_right = False
+
+    @property
+    def quits(self):
+        ''' getter for quits property'''
+        return self._quits
+
+    @quits.setter
+    def quits(self, new_value):
+        ''' setter for quits property'''
+        self._quits = new_value
+
+    @property
+    def turns_left(self):
+        ''' getter for turns_left property'''
+        return self._turns_left
+
+    @turns_left.setter
+    def turns_left(self, new_value):
+        ''' setter for turns_left property'''
+        self._turns_left = new_value
+
+    @property
+    def turns_right(self):
+        ''' getter for turns_right property'''
+        return self._turns_right
+
+    @turns_right.setter
+    def turns_right(self, new_value):
+        ''' setter for turns_right property'''
+        self._turns_right = new_value
+
+    @property
+    def thrusts(self):
+        ''' getter for thrusts property'''
+        return self._thrusts
+
+    @thrusts.setter
+    def thrusts(self, new_value):
+        ''' setter for thrusts property'''
+        self._thrusts = new_value
+
+    @property
+    def restarts(self):
+        ''' getter for restarts property'''
+        return self._restarts
+
+    @restarts.setter
+    def restarts(self, new_value):
+        ''' setter for restarts property'''
+        self._restarts = new_value
 
 
     def handle_events(self):
